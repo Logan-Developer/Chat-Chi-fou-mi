@@ -79,20 +79,26 @@ document.addEventListener("DOMContentLoaded", function(_e) {
     sock.on("message", function(msg) {
         var p = document.createElement("p");
 
-        if (msg.from == null) { // system message
-            p.classList.add("system");
+        p.textContent = timestampToTime(msg.date) + " - ";
 
-            p.textContent = timestampToTime(msg.date) + " - [admin] : " + msg.text;
-        }
-        
-        else {
-            p.textContent = timestampToTime(msg.date) + " - " + msg.from + " : " + msg.text;
+        if (msg.from != null) {
+            p.textContent += msg.from;
 
-            if (msg.from === pseudo) { // my message
-                p.classList.add("me");
+            if (msg.to != null) { // private message
+                p.textContent += " [private]";
+                p.className = "pm";
+            }
+
+            if (msg.from == pseudo) { // my message
+                p.className = "me";
             }
         }
+        else { // system message
+            p.textContent += " [admin]";
+            p.className = "system";
+        }
 
+        p.textContent += " : " + msg.text;
         document.getElementsByTagName("main")[0].appendChild(p);
     });
 
@@ -104,7 +110,16 @@ document.addEventListener("DOMContentLoaded", function(_e) {
     document.getElementById("btnSend").addEventListener("click", function(e) {
         var textInput = document.getElementById("myMessage");
         if (textInput.value != "") {
-            sock.emit("message", { to: null, text: textInput.value });
+
+            // if the message is a private message, it starts with a @pseudo
+            var to = textInput.value.match(/^@(\w+)/);
+
+            if (to != null) {
+                to = to[1];
+                textInput.value = textInput.value.replace(/^@\w+/, "");
+            }
+
+            sock.emit("message", { to: to, text: textInput.value });
             textInput.value = "";
         }
     });
