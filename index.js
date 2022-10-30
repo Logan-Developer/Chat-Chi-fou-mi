@@ -61,11 +61,11 @@ io.on('connection', function (socket) {
         // log
         console.log("New user : " + currentID);
         // send welcome message to the client
-        socket.emit("welcome", Object.keys(clients));
+        socket.emit("welcome", { clients: Object.keys(clients), scores: chifoumi.getScores() });
         // send to other clients that a new client is connected
         socket.broadcast.emit("message", { from: null, to: null, text: currentID + " joined the conversation", date: Date.now() });
         // send to the client the list of connected clients
-        socket.broadcast.emit("list", Object.keys(clients));
+        socket.broadcast.emit("list", { clients: Object.keys(clients), scores: chifoumi.getScores() });
     });
     
     

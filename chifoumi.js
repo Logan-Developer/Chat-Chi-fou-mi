@@ -2,6 +2,8 @@ const CHIFOUMI_CHOICES = [':rock:', ':paper:', ':scissors:', ':lizard:', ':spock
 
 var currentGames = {};
 
+var scores = {};
+
 function chifoumiRequestParametersValid(adversary, choice) {
   return adversary && choice && adversary[0] === '@' && CHIFOUMI_CHOICES.indexOf(choice) !== -1;
 }
@@ -89,10 +91,29 @@ function sendChifoumiAnswer(me, opponent, choice, clients) {
         msgOpponent += " - You win!";
     }
 
+    // send right message to each player
     mySocket.emit("chifoumi-message", { opponent: opponent, text: msgSender, date: Date.now() });
     opponentSocket.emit("chifoumi-message", { opponent: me, text: msgOpponent, date: Date.now() });
 
     delete currentGames[opponent];
+
+    // update scores
+    if (results.senderWins) {
+        if (!scores[me]) {
+            scores[me] = 0;
+        }
+        scores[me]++;
+    }
+    else if (results.opponentWins) {
+        if (!scores[opponent]) {
+            scores[opponent] = 0;
+        }
+        scores[opponent]++;
+    }
+
+    // send scores to each player
+    mySocket.emit("list", { clients: Object.keys(clients), scores: scores });
+    mySocket.broadcast.emit("list", { clients: Object.keys(clients), scores: scores });
 }
 
 function checkChallengeResults(choiceSender, choiceOpponent) {
@@ -160,4 +181,9 @@ function checkChallengeResults(choiceSender, choiceOpponent) {
     }
 
     return { senderWins: senderWins, opponentWins: opponentWins, text: msg };
+}
+
+
+exports.getScores = function () {
+    return scores;
 }

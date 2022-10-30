@@ -17,17 +17,19 @@ function chifoumiRequestParametersValid(adversary, choice) {
 
 
 
-function updateConnectedUsersList(clients) {
-    var list = document.getElementById("content").getElementsByTagName("aside")[0];
-        list.innerHTML = "";
+function updateConnectedUsersList(list) {
+    var aside = document.getElementById("content").getElementsByTagName("aside")[0];
+    aside.innerHTML = "";
 
-    for (var i = 0; i < clients.length; i++) {
+    for (var i = 0; i < list.clients.length; i++) {
         var p = document.createElement("p");
-        p.textContent = clients[i];
+        p.textContent = list.clients[i];
 
-        p.setAttribute("data-score", 0);
+        var score = list.scores[list.clients[i]];
 
-        list.appendChild(p);
+        p.setAttribute("data-score", score ? score : 0);
+
+        aside.appendChild(p);
     }
 }
 
@@ -219,15 +221,15 @@ document.addEventListener("DOMContentLoaded", function(_e) {
      *********************************************/
 
     // get list when we are connected, and display chat ui
-    sock.on("welcome", function(clients) {
+    sock.on("welcome", function(list) {
         document.getElementById("radio2").checked = true;
 
-        updateConnectedUsersList(clients);
+        updateConnectedUsersList(list);
     });
 
     // update list when a new user is connected
-    sock.on("list", function(clients) {
-        updateConnectedUsersList(clients);
+    sock.on("list", function(list) {
+        updateConnectedUsersList(list);
     });
 
 
