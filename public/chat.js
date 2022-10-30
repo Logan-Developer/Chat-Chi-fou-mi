@@ -4,14 +4,22 @@ function updateConnectedUsersList(clients) {
     var list = document.getElementById("content").getElementsByTagName("aside")[0];
         list.innerHTML = "";
 
-        for (var i = 0; i < clients.length; i++) {
-            var p = document.createElement("p");
-            p.textContent = clients[i];
+    for (var i = 0; i < clients.length; i++) {
+        var p = document.createElement("p");
+        p.textContent = clients[i];
 
-            p.setAttribute("data-score", 0);
+        p.setAttribute("data-score", 0);
 
-            list.appendChild(p);
-        }
+        list.appendChild(p);
+    }
+}
+
+function timestampToTime(timestamp) {
+    var date = new Date(timestamp);
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 }
 
 document.addEventListener("DOMContentLoaded", function(_e) {
@@ -56,6 +64,23 @@ document.addEventListener("DOMContentLoaded", function(_e) {
     // update list when a new user is connected
     sock.on("list", function(clients) {
         updateConnectedUsersList(clients);
+    });
+
+
+    /**********************************************
+     * Displays messages
+     *********************************************/
+
+    sock.on("message", function(msg) {
+        var p = document.createElement("p");
+
+        if (msg.from == null) { // system message
+            p.classList.add("system");
+
+            p.textContent = timestampToTime(msg.date) + " - [admin] : " + msg.text;
+        }
+
+        document.getElementsByTagName("main")[0].appendChild(p);
     });
 });
     
