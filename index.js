@@ -6,6 +6,8 @@ const server = app.listen(8080, function() {
     console.log("Server is running on port 8080, waiting for connections...");
 });
 
+const chifoumi = require('./chifoumi');
+
 // Listening to the connection event for incoming sockets
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -72,7 +74,8 @@ io.on('connection', function (socket) {
      *  @param  msg     Object  Message to send 
      */
     socket.on("message", function(msg) {
-        console.log("Message received");   
+        console.log("Message received");
+
         // if the message is a private message, we send it to the recipient only
         if (msg.to != null) {
             if (clients[msg.to] !== undefined) {
@@ -131,5 +134,12 @@ io.on('connection', function (socket) {
         }
         console.log("Client disconnected");
     });
-        
+    
+    
+    // Chifoumi management
+    socket.on("chifoumi-message", function(msg) {
+        console.log("Chifoumi message received");
+
+        chifoumi.playChifoumi(currentID, msg.to, msg.choice, clients);
+    });
 });

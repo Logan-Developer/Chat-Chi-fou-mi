@@ -5,6 +5,18 @@
 **********************************************/
 var pseudo;
 
+/**********************************************
+    * Chifoumi
+**********************************************/
+const CHIFOUMI_CHOICES = [':rock:', ':paper:', ':scissors:', ':lizard:', ':spock:'];
+
+function chifoumiRequestParametersValid(adversary, choice) {
+  return adversary && choice && adversary[0] === '@' && CHIFOUMI_CHOICES.indexOf(choice) !== -1;
+}
+
+
+
+
 function updateConnectedUsersList(clients) {
     var list = document.getElementById("content").getElementsByTagName("aside")[0];
         list.innerHTML = "";
@@ -98,6 +110,13 @@ function replaceEmojisInMessage(message) {
         ":hot_face:": "🥵"
     }
 
+    // add emojis required for chifoumi (:rock:, :paper:, :scissors:, :lizard:, :spock:)
+    emojis[CHIFOUMI_CHOICES[0]] = "✊";
+    emojis[CHIFOUMI_CHOICES[1]] = "🖐";
+    emojis[CHIFOUMI_CHOICES[2]] = "✌";
+    emojis[CHIFOUMI_CHOICES[3]] = "🦎";
+    emojis[CHIFOUMI_CHOICES[4]] = "🖖";
+
     // now check if message contains any emoji
     for (var emoji in emojis) {
         if (message.indexOf(emoji) !== -1) {
@@ -113,7 +132,58 @@ function timestampToTime(timestamp) {
     var hours = date.getHours();
     var minutes = "0" + date.getMinutes();
     var seconds = "0" + date.getSeconds();
-    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    return hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
+}
+
+function addMessageToChat(msg) {
+    var p = document.createElement("p");
+
+        p.textContent = timestampToTime(msg.date) + " - ";
+
+        if (msg.from != null) {
+                p.textContent += msg.from;
+
+            if (msg.to != null) { // private message
+                p.textContent += " [private]";
+                p.className = "pm";
+            }
+
+            if (msg.from == pseudo) { // my message
+                p.className = "me";
+            }
+        }
+        else if (msg.opponent != null) { // chifoumi message
+            p.textContent += " [chifoumi]";
+            p.className = "chifoumi";
+        }
+        else { // system message
+            p.textContent += " [admin]";
+            p.className = "system";
+        }
+
+        p.textContent += " : " + replaceEmojisInMessage(msg.text);
+
+        if (msg.opponent && msg.sender && msg.sender !== pseudo) { // display the reply button only if I'm not the sender of chifoumi request
+            var replyBtn = document.createElement("button");
+            replyBtn.textContent = "Reply";
+
+            replyBtn.addEventListener("click", function() {
+                var textInput = document.getElementById("myMessage");
+                textInput.value = "/chifoumi @" + msg.opponent + " :";
+                textInput.focus();
+            });
+            p.textContent += " ";
+            p.appendChild(replyBtn);
+
+
+            // play the buzz animation
+            var chatWindow = document.getElementById("content");
+            chatWindow.className = "buzz";
+            setTimeout(function() {
+                chatWindow.className = "";
+            }, 1000);
+        }
+        document.getElementsByTagName("main")[0].appendChild(p);
 }
 
 document.addEventListener("DOMContentLoaded", function(_e) {
@@ -166,29 +236,7 @@ document.addEventListener("DOMContentLoaded", function(_e) {
      *********************************************/
 
     sock.on("message", function(msg) {
-        var p = document.createElement("p");
-
-        p.textContent = timestampToTime(msg.date) + " - ";
-
-        if (msg.from != null) {
-            p.textContent += msg.from;
-
-            if (msg.to != null) { // private message
-                p.textContent += " [private]";
-                p.className = "pm";
-            }
-
-            if (msg.from == pseudo) { // my message
-                p.className = "me";
-            }
-        }
-        else { // system message
-            p.textContent += " [admin]";
-            p.className = "system";
-        }
-
-        p.textContent += " : " + msg.text;
-        document.getElementsByTagName("main")[0].appendChild(p);
+        addMessageToChat(msg);
     });
 
     /**********************************************
@@ -208,9 +256,41 @@ document.addEventListener("DOMContentLoaded", function(_e) {
                 textInput.value = textInput.value.replace(/^@\w+/, "");
             }
 
-            sock.emit("message", { to: to, text: replaceEmojisInMessage(textInput.value) });
+
+            // send a chifoumi message if msg starts with /chifoumi
+            var chifoumi = textInput.value.match(/^\/chifoumi/);
+
+            if (chifoumi != null) {
+                var params = textInput.value.replace(/^\/chifoumi/, "").trim().split(" ");
+
+                if (!chifoumiRequestParametersValid(params[0], params[1])) {
+                    // send an error message to the user
+                    addMessageToChat({
+                        opponent: "admin",
+                        text: "Invalid chifoumi request. Usage: /chifoumi @adversary :choice: (choice can be :rock:, :paper:, :scissors:, :lizard: or :spock:)",
+                        date: Date.now()
+                    });
+                    return;
+                }
+
+                sock.emit("chifoumi-message", {to: params[0], choice: params[1]});
+
+                textInput.value = "";
+                return;
+            }
+
+            sock.emit("message", { to: to, text: textInput.value });
             textInput.value = "";
         }
+    });
+
+    
+    /**********************************************
+     * Chifoumi
+    **********************************************/
+
+    sock.on("chifoumi-message", function(msg) {
+        addMessageToChat(msg);
     });
 });
     
