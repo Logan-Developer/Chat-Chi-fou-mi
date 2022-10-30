@@ -19,6 +19,95 @@ function updateConnectedUsersList(clients) {
     }
 }
 
+
+function checkIfMessageContainsEmojis(message) {
+    // some of the most popular emojis
+    var emojis = {
+        ":joy:": "😂",
+        ":heart:": "❤️",
+        ":rofl:": "🤣",
+        ":thumbsup:": "👍",
+        ":sob:": "😭",
+        ":pray:": "🙏",
+        ":kissing_heart:": "😘",
+        ":smiling_face_with_3_hearts:": "🥰",
+        ":heart_eyes:": "😍",
+        ":blush:": "😊",
+        ":tada:": "🎉",
+        ":grin:": "😁",
+        ":two_hearts:": "💕",
+        ":pleading_face:": "🥺",
+        ":sweat_smile:": "😅",
+        ":fire:": "🔥",
+        "person_facepalming:": "🤦",
+        ":shrug:": "🤷",
+        ":rolling_eyes:": "🙄",
+        ":hugging:": "🤗",
+        ":winking:": "😉",
+        ":birthday:": "🎂",
+        ":thinking:": "🤔",
+        ":clapping:": "👏",
+        ":slight_smile:": "🙂",
+        ":flushed:": "😳",
+        ":partying:": "🥳",
+        ":sunglasses:": "😎",
+        ":ok_hand:": "👌",
+        ":purple_heart:": "💜",
+        ":pensive:": "😔",
+        ":muscle:": "💪",
+        ":sparkles:": "✨",
+        ":sparkling_heart:": "💖",
+        ":eyes:": "👀",
+        ":yum:": "😋",
+        ":smirk:": "😏",
+        ":crying:": "😢",
+        ":backhand_right:": "👉",
+        ":growing_heart:": "💗",
+        ":weary:": "😩",
+        ":hundred_points:": "💯",
+        ":rose:": "🌹",
+        ":revolving_hearts:": "💞",
+        ":balloon:": "🎈",
+        ":blue_heart:": "💙",
+        ":happy:": "😃",
+        ":angry:": "😠",
+        ":bouquet:": "💐",
+        ":stuck_out_tongue:": "😛",
+        ":see_no_evil:": "🙈",
+        ":crossed_fingers:": "🤞",
+        ":drooling:": "🤤",
+        ":raised_hands:": "🙌",
+        ":zan:": "🤪",
+        ":broken_heart:": "💔",
+        ":relieved:": "😌",
+        ":kiss_mark:": "💋",
+        ":skull:": "💀",
+        ":backhand_down:": "👇",
+        ":upside_down:": "🙃",
+        ":grimacing:": "😬",
+        ":sleeping:": "😴",
+        ":scream:": "😱",
+        ":neutral:": "😐",
+        ":devil:": "😈",
+        ":victory:": "✌",
+        ":confetti:": "🎊",
+        ":disappointed:": "😞",
+        ":kissing_closed_eyes:": "😚",
+        ":poop:": "💩",
+        ":check_mark:": "✅",
+        ":hot_face:": "🥵"
+    }
+
+    // now check if message contains any emoji
+    for (var emoji in emojis) {
+        if (message.indexOf(emoji) !== -1) {
+            message = message.replace(emoji, emojis[emoji]);
+        }
+    }
+
+    return message;
+}
+
 function timestampToTime(timestamp) {
     var date = new Date(timestamp);
     var hours = date.getHours();
@@ -119,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function(_e) {
                 textInput.value = textInput.value.replace(/^@\w+/, "");
             }
 
-            sock.emit("message", { to: to, text: textInput.value });
+            sock.emit("message", { to: to, text: checkIfMessageContainsEmojis(textInput.value) });
             textInput.value = "";
         }
     });
