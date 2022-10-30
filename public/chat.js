@@ -134,7 +134,8 @@ function timestampToTime(timestamp) {
     var hours = date.getHours();
     var minutes = "0" + date.getMinutes();
     var seconds = "0" + date.getSeconds();
-    return hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
+
+    return hours + ':' + minutes.substring(minutes.length - 2) + ':' + seconds.substring(seconds.length - 2);
 }
 
 function addMessageToChat(msg) {
