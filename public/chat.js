@@ -20,7 +20,7 @@ function updateConnectedUsersList(clients) {
 }
 
 
-function checkIfMessageContainsEmojis(message) {
+function replaceEmojisInMessage(message) {
     // some of the most popular emojis
     var emojis = {
         ":joy:": "😂",
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function(_e) {
                 textInput.value = textInput.value.replace(/^@\w+/, "");
             }
 
-            sock.emit("message", { to: to, text: checkIfMessageContainsEmojis(textInput.value) });
+            sock.emit("message", { to: to, text: replaceEmojisInMessage(textInput.value) });
             textInput.value = "";
         }
     });
