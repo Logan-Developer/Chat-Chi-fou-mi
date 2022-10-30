@@ -1,5 +1,10 @@
 "use strict";
 
+/**********************************************
+    * Global variables
+**********************************************/
+var pseudo;
+
 function updateConnectedUsersList(clients) {
     var list = document.getElementById("content").getElementsByTagName("aside")[0];
         list.innerHTML = "";
@@ -38,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function(_e) {
 
     // When the user clicks on the button "Login"
     document.getElementById("btnConnect").addEventListener("click", function(e) {
-        var pseudo = document.getElementById("pseudo").value;
+        pseudo = document.getElementById("pseudo").value;
         if (pseudo != "") {
             sock.emit("login", pseudo);
         }
@@ -68,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function(_e) {
 
 
     /**********************************************
-     * Displays messages
+     * Display messages
      *********************************************/
 
     sock.on("message", function(msg) {
@@ -79,8 +84,29 @@ document.addEventListener("DOMContentLoaded", function(_e) {
 
             p.textContent = timestampToTime(msg.date) + " - [admin] : " + msg.text;
         }
+        
+        else {
+            p.textContent = timestampToTime(msg.date) + " - " + msg.from + " : " + msg.text;
+
+            if (msg.from === pseudo) { // my message
+                p.classList.add("me");
+            }
+        }
 
         document.getElementsByTagName("main")[0].appendChild(p);
+    });
+
+    /**********************************************
+     * Send messages
+     *********************************************/
+
+    // When the user clicks on the button "Send"
+    document.getElementById("btnSend").addEventListener("click", function(e) {
+        var textInput = document.getElementById("myMessage");
+        if (textInput.value != "") {
+            sock.emit("message", { to: null, text: textInput.value });
+            textInput.value = "";
+        }
     });
 });
     
