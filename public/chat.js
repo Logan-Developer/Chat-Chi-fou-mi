@@ -108,9 +108,6 @@ function updateConnectedUsersList(list) {
     var aside = document.getElementById("content").getElementsByTagName("aside")[0];
     aside.innerHTML = "";
 
-    if (list.length === 0) {
-        return;
-    }
     // the user with most points is displayed first
     list.clients.sort(function (a, b) {
         return list.scores[b] - list.scores[a];

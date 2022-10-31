@@ -114,7 +114,7 @@ io.on('connection', function (socket) {
             // unregister client
             currentID = null;
              // send new list of connected clients
-            socket.broadcast.emit("list", Object.keys(clients));
+            socket.broadcast.emit("list", { clients: Object.keys(clients), scores: chifoumi.getScores() });
         }
     });
     
@@ -130,7 +130,7 @@ io.on('connection', function (socket) {
             // unregister client
             currentID = null;
             // send new list of connected clients
-            socket.broadcast.emit("list", Object.keys(clients));
+            socket.broadcast.emit("list", { clients: Object.keys(clients), scores: chifoumi.getScores() });
         }
         console.log("Client disconnected");
     });
