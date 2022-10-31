@@ -5,11 +5,95 @@
 **********************************************/
 var pseudo;
 
+var CHIFOUMI_CHOICES = [":rock:", ":paper:", ":scissors:", ":lizard:", ":spock:"];
+
+// some of the most popular emojis
+var emojis = {
+    ":joy:": "😂",
+    ":heart:": "❤️",
+    ":rofl:": "🤣",
+    ":thumbsup:": "👍",
+    ":sob:": "😭",
+    ":pray:": "🙏",
+    ":kissing_heart:": "😘",
+    ":smiling_face_with_3_hearts:": "🥰",
+    ":heart_eyes:": "😍",
+    ":blush:": "😊",
+    ":tada:": "🎉",
+    ":grin:": "😁",
+    ":two_hearts:": "💕",
+    ":pleading_face:": "🥺",
+    ":sweat_smile:": "😅",
+    ":fire:": "🔥",
+    "person_facepalming:": "🤦",
+    ":shrug:": "🤷",
+    ":rolling_eyes:": "🙄",
+    ":hugging:": "🤗",
+    ":winking:": "😉",
+    ":birthday:": "🎂",
+    ":thinking:": "🤔",
+    ":clapping:": "👏",
+    ":slight_smile:": "🙂",
+    ":flushed:": "😳",
+    ":partying:": "🥳",
+    ":sunglasses:": "😎",
+    ":ok_hand:": "👌",
+    ":purple_heart:": "💜",
+    ":pensive:": "😔",
+    ":muscle:": "💪",
+    ":sparkles:": "✨",
+    ":sparkling_heart:": "💖",
+    ":eyes:": "👀",
+    ":yum:": "😋",
+    ":smirk:": "😏",
+    ":crying:": "😢",
+    ":backhand_right:": "👉",
+    ":growing_heart:": "💗",
+    ":weary:": "😩",
+    ":hundred_points:": "💯",
+    ":rose:": "🌹",
+    ":revolving_hearts:": "💞",
+    ":balloon:": "🎈",
+    ":blue_heart:": "💙",
+    ":happy:": "😃",
+    ":angry:": "😠",
+    ":bouquet:": "💐",
+    ":stuck_out_tongue:": "😛",
+    ":see_no_evil:": "🙈",
+    ":crossed_fingers:": "🤞",
+    ":drooling:": "🤤",
+    ":raised_hands:": "🙌",
+    ":zan:": "🤪",
+    ":broken_heart:": "💔",
+    ":relieved:": "😌",
+    ":kiss_mark:": "💋",
+    ":skull:": "💀",
+    ":backhand_down:": "👇",
+    ":upside_down:": "🙃",
+    ":grimacing:": "😬",
+    ":sleeping:": "😴",
+    ":scream:": "😱",
+    ":neutral:": "😐",
+    ":devil:": "😈",
+    ":victory:": "✌",
+    ":confetti:": "🎊",
+    ":disappointed:": "😞",
+    ":kissing_closed_eyes:": "😚",
+    ":poop:": "💩",
+    ":check_mark:": "✅",
+    ":hot_face:": "🥵"
+}
+
+// add emojis required for chifoumi (:rock:, :paper:, :scissors:, :lizard:, :spock:)
+emojis[CHIFOUMI_CHOICES[0]] = "✊";
+emojis[CHIFOUMI_CHOICES[1]] = "🖐";
+emojis[CHIFOUMI_CHOICES[2]] = "✌";
+emojis[CHIFOUMI_CHOICES[3]] = "🦎";
+emojis[CHIFOUMI_CHOICES[4]] = "🖖";
+
 /**********************************************
     * Chifoumi
 **********************************************/
-const CHIFOUMI_CHOICES = [':rock:', ':paper:', ':scissors:', ':lizard:', ':spock:'];
-
 function chifoumiRequestParametersValid(adversary, choice) {
   return adversary && choice && adversary[0] === '@' && CHIFOUMI_CHOICES.indexOf(choice) !== -1;
 }
@@ -35,91 +119,7 @@ function updateConnectedUsersList(list) {
 
 
 function replaceEmojisInMessage(message) {
-    // some of the most popular emojis
-    var emojis = {
-        ":joy:": "😂",
-        ":heart:": "❤️",
-        ":rofl:": "🤣",
-        ":thumbsup:": "👍",
-        ":sob:": "😭",
-        ":pray:": "🙏",
-        ":kissing_heart:": "😘",
-        ":smiling_face_with_3_hearts:": "🥰",
-        ":heart_eyes:": "😍",
-        ":blush:": "😊",
-        ":tada:": "🎉",
-        ":grin:": "😁",
-        ":two_hearts:": "💕",
-        ":pleading_face:": "🥺",
-        ":sweat_smile:": "😅",
-        ":fire:": "🔥",
-        "person_facepalming:": "🤦",
-        ":shrug:": "🤷",
-        ":rolling_eyes:": "🙄",
-        ":hugging:": "🤗",
-        ":winking:": "😉",
-        ":birthday:": "🎂",
-        ":thinking:": "🤔",
-        ":clapping:": "👏",
-        ":slight_smile:": "🙂",
-        ":flushed:": "😳",
-        ":partying:": "🥳",
-        ":sunglasses:": "😎",
-        ":ok_hand:": "👌",
-        ":purple_heart:": "💜",
-        ":pensive:": "😔",
-        ":muscle:": "💪",
-        ":sparkles:": "✨",
-        ":sparkling_heart:": "💖",
-        ":eyes:": "👀",
-        ":yum:": "😋",
-        ":smirk:": "😏",
-        ":crying:": "😢",
-        ":backhand_right:": "👉",
-        ":growing_heart:": "💗",
-        ":weary:": "😩",
-        ":hundred_points:": "💯",
-        ":rose:": "🌹",
-        ":revolving_hearts:": "💞",
-        ":balloon:": "🎈",
-        ":blue_heart:": "💙",
-        ":happy:": "😃",
-        ":angry:": "😠",
-        ":bouquet:": "💐",
-        ":stuck_out_tongue:": "😛",
-        ":see_no_evil:": "🙈",
-        ":crossed_fingers:": "🤞",
-        ":drooling:": "🤤",
-        ":raised_hands:": "🙌",
-        ":zan:": "🤪",
-        ":broken_heart:": "💔",
-        ":relieved:": "😌",
-        ":kiss_mark:": "💋",
-        ":skull:": "💀",
-        ":backhand_down:": "👇",
-        ":upside_down:": "🙃",
-        ":grimacing:": "😬",
-        ":sleeping:": "😴",
-        ":scream:": "😱",
-        ":neutral:": "😐",
-        ":devil:": "😈",
-        ":victory:": "✌",
-        ":confetti:": "🎊",
-        ":disappointed:": "😞",
-        ":kissing_closed_eyes:": "😚",
-        ":poop:": "💩",
-        ":check_mark:": "✅",
-        ":hot_face:": "🥵"
-    }
-
-    // add emojis required for chifoumi (:rock:, :paper:, :scissors:, :lizard:, :spock:)
-    emojis[CHIFOUMI_CHOICES[0]] = "✊";
-    emojis[CHIFOUMI_CHOICES[1]] = "🖐";
-    emojis[CHIFOUMI_CHOICES[2]] = "✌";
-    emojis[CHIFOUMI_CHOICES[3]] = "🦎";
-    emojis[CHIFOUMI_CHOICES[4]] = "🖖";
-
-    // now check if message contains any emoji
+    // check if message contains any emoji
     for (var emoji in emojis) {
         if (message.indexOf(emoji) !== -1) {
             message = message.replace(emoji, emojis[emoji]);
@@ -294,6 +294,54 @@ document.addEventListener("DOMContentLoaded", function(_e) {
 
     sock.on("chifoumi-message", function(msg) {
         addMessageToChat(msg);
+    });
+
+
+    /**********************************************
+     * TextInput events
+     *********************************************/
+    var textInput = document.getElementById("myMessage");
+
+    textInput.addEventListener("keydown", function(e) {
+        // tab key
+        if (e.key == "Tab") {
+            e.preventDefault();
+
+            // case where we have a complete emoji => we replace it with the image (only if not a chifoumi command)
+            if (textInput.value.match(/:\w+:/)) {
+                if (textInput.value.match(/^\/chifoumi/)) {
+                    return;
+                }
+
+                var textToReplace = textInput.value.match(/:\w+:/)[0];
+
+                textInput.value = textInput.value.replace(/:\w+:/, replaceEmojisInMessage(textToReplace));
+                textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
+            }
+
+            // case where we have a partial emoji => we autocomplete it
+            else if (textInput.value.match(/:\w*$/)) {
+                var partialEmoji = textInput.value.match(/:\w*$/)[0];
+
+                // if input starts with /chifoumi, we autocomplete only for chifoumi emojis
+                if (textInput.value.match(/^\/chifoumi/)) {
+                    var emoji = Object.keys(emojis).find(function(emoji) {
+                        return emoji.startsWith(partialEmoji) && emoji.match(/:rock:|:paper:|:scissors:|:lizard:|:spock:/);
+                    });
+                }
+
+                // else we autocomplete for all emojis
+                else {
+                    var emoji = Object.keys(emojis).find(function(emoji) {
+                        return emoji.startsWith(partialEmoji);
+                    });
+                }
+                if (emoji) {
+                    textInput.value = textInput.value.replace(/:\w*$/, emoji);
+                    textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
+                }
+            }
+        }
     });
 });
     
