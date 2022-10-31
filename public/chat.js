@@ -10,6 +10,9 @@ var CHIFOUMI_CHOICES = [":rock:", ":paper:", ":scissors:", ":lizard:", ":spock:"
 var commandsHistory = [];
 var commandsHistoryIndex = 0;
 
+var emojiToComplete = null;
+var currEmojiIndex = 0;
+
 // list of emojis taken from https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md#github-custom-emoji
 // (not complete)
 var emojis = {
@@ -190,9 +193,7 @@ var emojis = {
     ":middle_finger:": "🖕",
     ":point_down:": "👇",
     ":point_up:": "☝️",
-    ":+1:": "👍",
     ":thumbsup:": "👍",
-    ":-1:": "👎",
     ":thumbsdown:": "👎",
     ":fist:": "✊",
     ":fist_raised:": "✊",
@@ -401,6 +402,8 @@ document.addEventListener("DOMContentLoaded", function(_e) {
     // When the user clicks on the button "Send"
     document.getElementById("btnSend").addEventListener("click", function(e) {
         commandsHistoryIndex = commandsHistory.length; // reset commands history index
+        currEmojiIndex = -1; // reset emoji index
+        emojiToComplete = null; // reset emoji to complete
 
         var textInput = document.getElementById("myMessage");
         if (textInput.value != "") {
@@ -458,45 +461,55 @@ document.addEventListener("DOMContentLoaded", function(_e) {
      *********************************************/
     var textInput = document.getElementById("myMessage");
 
-    textInput.addEventListener("keydown", function(e) {
-        // tab key
-        if (e.key == "Tab") {
-            e.preventDefault();
-
-            // case where we have a complete emoji => we replace it with the image (only if not a chifoumi command)
-            if (textInput.value.match(/:\w+:/)) {
-                if (textInput.value.match(/^\/chifoumi/)) {
-                    return;
+    function autocompleteEmoji() {
+            // symbol before cursor is ':'
+            if (textInput.value.substring(0, textInput.selectionStart).match(/:\w*$/)) {
+                if (currEmojiIndex == -1) {
+                    emojiToComplete = textInput.value.substring(0, textInput.selectionStart).match(/:\w*$/)[0];
                 }
-
-                var textToReplace = textInput.value.match(/:\w+:/)[0];
-
-                textInput.value = textInput.value.replace(/:\w+:/, replaceEmojisInMessage(textToReplace));
-                textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
-            }
-
-            // case where we have a partial emoji => we autocomplete it
-            else if (textInput.value.match(/:\w*$/)) {
-                var partialEmoji = textInput.value.match(/:\w*$/)[0];
 
                 // if input starts with /chifoumi, we autocomplete only for chifoumi emojis
                 if (textInput.value.match(/^\/chifoumi/)) {
                     var emoji = Object.keys(emojis).find(function(emoji) {
-                        return emoji.startsWith(partialEmoji) && emoji.match(/:rock:|:paper:|:scissors:|:lizard:|:spock:/);
+                        
+                        return emoji.startsWith(emojiToComplete) && emoji.match(/:rock:|:paper:|:scissors:|:lizard:|:spock:/) && Object.keys(emojis).indexOf(emoji) > currEmojiIndex;
                     });
                 }
 
                 // else we autocomplete for all emojis
                 else {
                     var emoji = Object.keys(emojis).find(function(emoji) {
-                        return emoji.startsWith(partialEmoji);
+                        return emoji.startsWith(emojiToComplete) && Object.keys(emojis).indexOf(emoji) > currEmojiIndex;
                     });
                 }
                 if (emoji) {
-                    textInput.value = textInput.value.replace(/:\w*$/, emoji);
+                    currEmojiIndex = Object.keys(emojis).indexOf(emoji);
+
+                    if (textInput.value.match(/:\w+:$/)) {
+                        textInput.value = textInput.value.replace(/:\w+:$/, emoji);
+                    }
+                    else {
+                        textInput.value = textInput.value.replace(/:\w*$/, emoji);
+                    }
                     textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
                 }
+
+                // if no emoji found, we reset the index
+                else {
+                    currEmojiIndex = 0;
+                }
             }
+        }
+
+    textInput.addEventListener("keydown", function(e) {
+        // tab key
+        if (e.key == "Tab") {
+            e.preventDefault();
+            autocompleteEmoji();
+        }
+        else {
+            currEmojiIndex = -1;
+            emojiToComplete = null;
         }
 
 
@@ -539,6 +552,17 @@ document.addEventListener("DOMContentLoaded", function(_e) {
             e.preventDefault();
 
             document.getElementById("btnSend").click();
+        }
+
+        // space key
+        if (e.key == " ") {
+            // if we add a space after a complete emoji, we replace it by its image
+            if (textInput.value.match(/:\w+:/)) {
+                var textToReplace = textInput.value.match(/:\w+:/)[0];
+
+                textInput.value = textInput.value.replace(/:\w+:/, replaceEmojisInMessage(textToReplace));
+                textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
+            }
         }
     });
 
