@@ -237,6 +237,14 @@ document.addEventListener("DOMContentLoaded", function(_e) {
         alert(msg);
     });
 
+
+    /**********************************************
+     * Logout
+     *********************************************/
+    document.getElementById("btnQuit").addEventListener("click", function(e) {
+        sock.emit("logout");
+        document.getElementById("radio1").checked = true;
+    });
     
     /**********************************************
      * Connected users list
