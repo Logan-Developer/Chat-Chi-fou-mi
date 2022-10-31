@@ -7,6 +7,9 @@ var pseudo;
 
 var CHIFOUMI_CHOICES = [":rock:", ":paper:", ":scissors:", ":lizard:", ":spock:"];
 
+var commandsHistory = [];
+var commandsHistoryIndex = 0;
+
 // some of the most popular emojis
 var emojis = {
     ":joy:": "😂",
@@ -248,6 +251,8 @@ document.addEventListener("DOMContentLoaded", function(_e) {
 
     // When the user clicks on the button "Send"
     document.getElementById("btnSend").addEventListener("click", function(e) {
+        commandsHistoryIndex = commandsHistory.length; // reset commands history index
+
         var textInput = document.getElementById("myMessage");
         if (textInput.value != "") {
 
@@ -264,6 +269,8 @@ document.addEventListener("DOMContentLoaded", function(_e) {
             var chifoumi = textInput.value.match(/^\/chifoumi/);
 
             if (chifoumi != null) {
+                commandsHistory.push(textInput.value);
+
                 var params = textInput.value.replace(/^\/chifoumi/, "").trim().split(" ");
 
                 if (!chifoumiRequestParametersValid(params[0], params[1])) {
@@ -340,6 +347,40 @@ document.addEventListener("DOMContentLoaded", function(_e) {
                     textInput.value = textInput.value.replace(/:\w*$/, emoji);
                     textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
                 }
+            }
+        }
+
+
+
+        // up arrow key
+        if (e.key == "ArrowUp") {
+            e.preventDefault();
+
+            // we display the previous command
+            if (commandsHistory.length > 0) {
+                if (commandsHistoryIndex == 0) {
+                    commandsHistoryIndex = commandsHistory.length;
+                }
+                commandsHistoryIndex--;
+                textInput.value = commandsHistory[commandsHistoryIndex];
+
+                textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
+            }
+        }
+
+        // down arrow key
+        if (e.key == "ArrowDown") {
+            e.preventDefault();
+
+            // we display the next command
+            if (commandsHistory.length > 0) {
+                if (commandsHistoryIndex == commandsHistory.length - 1) {
+                    commandsHistoryIndex = -1;
+                }
+                commandsHistoryIndex++;
+                textInput.value = commandsHistory[commandsHistoryIndex];
+
+                textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
             }
         }
     });
