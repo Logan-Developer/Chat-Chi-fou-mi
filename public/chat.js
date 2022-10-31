@@ -116,6 +116,16 @@ function updateConnectedUsersList(list) {
 
         p.setAttribute("data-score", score ? score : 0);
 
+        p.addEventListener("dblclick", function() {
+            var textInput = document.getElementById("myMessage");
+            textInput.value = "/chifoumi @" + this.textContent + " :";
+            textInput.focus();
+
+            // move cursor to the end of the text
+            textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
+        });
+
+
         aside.appendChild(p);
     }
 }
