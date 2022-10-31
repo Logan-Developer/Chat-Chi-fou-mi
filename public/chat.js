@@ -237,6 +237,13 @@ function updateConnectedUsersList(list) {
 
     // the user with most points is displayed first
     list.clients.sort(function (a, b) {
+        if (list.scores[a] === undefined) {
+            list.scores[a] = 0;
+        }
+        if (list.scores[b] === undefined) {
+            list.scores[b] = 0;
+        }
+
         return list.scores[b] - list.scores[a];
     });
 
