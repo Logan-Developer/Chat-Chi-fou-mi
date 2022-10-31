@@ -383,6 +383,26 @@ document.addEventListener("DOMContentLoaded", function(_e) {
                 textInput.selectionStart = textInput.selectionEnd = textInput.value.length;
             }
         }
+
+
+        // enter key
+        if (e.key == "Enter") {
+            e.preventDefault();
+
+            document.getElementById("btnSend").click();
+        }
+    });
+
+
+    var loginInput = document.getElementById("pseudo");
+
+    loginInput.addEventListener("keydown", function(e) {
+        // enter key
+        if (e.key == "Enter") {
+            e.preventDefault();
+
+            document.getElementById("btnConnect").click();
+        }
     });
 });
     
