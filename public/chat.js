@@ -299,7 +299,13 @@ function addMessageToChat(msg) {
                 p.textContent += msg.from;
 
             if (msg.to != null) { // private message
-                p.textContent += " [private]";
+                p.textContent += " [private";
+
+                if (msg.from === pseudo) {
+                    p.textContent += " @" + msg.to;
+                }
+                p.textContent += "]";
+
                 p.className = "pm";
             }
 
